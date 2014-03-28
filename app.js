@@ -36,14 +36,9 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
-app.get('/list', routes.list);
 app.get('/csv', routes.csv);
-app.post('/', routes.index_post);
 
-app.get('/genres', routes.genres);
-app.post('/genres', routes.genres_post);
-app.post('/genre_list', routes.genre_list);
-
+app.post('/list', routes.list);
 app.post('/action', routes.action);
 
 // Open App socket

@@ -3,10 +3,9 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var Cast = new Schema({
-    _id        : ObjectId,
     person_id     : {type: Schema.ObjectId, ref: 'Persons'},
     film_id  : {type: Schema.ObjectId, ref: 'Films'},
     role_id : {type: Schema.ObjectId, ref: 'Roles'}
 });
 
-module.exports = mongoose.model('Casts', Cast);
+module.exports = mongoose.model('Cast', Cast);

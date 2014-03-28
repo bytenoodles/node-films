@@ -3,8 +3,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var Role = new Schema({
-    id        : ObjectId,
     name     : { type: String, required: true }
 });
 
-module.exports = mongoose.model('Roles', Role);
+module.exports = mongoose.model('Role', Role);

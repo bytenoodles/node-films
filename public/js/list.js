@@ -1,6 +1,6 @@
 function accion(type, _id){
     var data = new Object();
-    data.modelName = "Genre";
+    data.modelName = model;
     data.accion = type;
 
     switch(type){
@@ -28,6 +28,7 @@ function accion(type, _id){
         contentType: 'application/json', 
         url: 'http://localhost:3003/action', 
         success: function(docs) {
+            $(".new").val("");
             console.log("accion() success")
         },
         error: function(docs) {
@@ -41,14 +42,13 @@ function accion(type, _id){
 
 function list(){
     var data = {};
-    data.title = "title";
-    data.message = "message";
+    data.model = model;
     
     $.ajax({
         type: 'POST', 
         data: JSON.stringify(data), 
         contentType: 'application/json', 
-        url: 'http://localhost:3003/genre_list', 
+        url: 'http://localhost:3003/list', 
         success: function(docs) {
             $("#table-body").find("tr:not(.newtr)").remove();
             if(docs != ""){

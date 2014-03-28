@@ -8,25 +8,29 @@ block content
                 small.subtitle Subtitle text
         article.row
             .span14
-                h2 #{entity.modelName} list
+                h2 #{model.modelName} list
                 
                     table.zebra-striped
                         thead
                             tr
-                                -for(var prop in entity.schema.paths)
+                                -for(var prop in model.schema.paths)
                                     -if (!(/^_/).test(prop))
                                         td #{prop}
                         tbody(id="table-body")
                         
                         
                         tr.newtr
-                            -for(var prop in entity.schema.paths)
+                            -for(var prop in model.schema.paths)
                                 -if (!(/^_/).test(prop))
                                     td
-                                        input(type='text', id='#{prop}', class="new")
+                                        -if (model.schema.paths[prop].instance != "ObjectID")
+                                            input(type='text', id='#{prop}', class="new")
+                                        -else
+                                            .div Object
                             td
                                 a(href='javascript:accion(\"I\",null)') Add
 block script
     script(src="/js/list.js")
-
+    script.
+        var model = "#{model.modelName}";
         

@@ -5,7 +5,7 @@
 */
 
 // loads model file and engine
-var mongoose    = require('mongoose'),
+var mongoose    = require('mongoose'), 
     castModel = require('../model/CastModel'),
     contactModel = require('../model/ContactModel'),
     filmModel = require('../model/FilmModel'),
@@ -13,20 +13,16 @@ var mongoose    = require('mongoose'),
     personModel = require('../model/PersonModel'),
     roleModel = require('../model/RoleModel');
 
+var hashModels = [];
+hashModels['Cast'] = castModel;
+hashModels['Contact'] = contactModel;
+hashModels['Film'] = filmModel;
+hashModels['Genre'] = genreModel;
+hashModels['Person'] = personModel;
+hashModels['Role'] = roleModel;
+
 // Open DB connection
 mongoose.connect('mongodb://localhost/films');
-
-// Home page => registration form
-exports.index = function(req, res){
-    res.render('index.jade', { title: 'ByteFilms - Index', messages: [], errors: [], layout: false});
-};
-
-// Member list page
-exports.list = function(req, res){
-    memberModel.find({},function(err, docs){
-        res.render('list.jade', { title: 'ByteFilms - List', members: docs, layout: false});
-    });
-};
 
 // Member list quick-and-dirty(tm) CSV export
 exports.csv = function(req, res){
@@ -46,40 +42,26 @@ exports.csv = function(req, res){
     });
 };
 
-// Member register logic
-exports.index_post = function(req, res){
-    member = new memberModel();
-    member.title = req.body.title;
-    member.firstname = req.body.firstname;
-    member.lastname = req.body.lastname;
-    member.mail = req.body.mail;
-    
-    member.save(function (err) {
-        messages = [];
-        errors = [];
-        if (!err){
-            console.log('Success!');
-            messages.push("Thank you for you new membership !");
-        }
-        else {
-            console.log('Error !');
-            errors.push("At least a mandatory field has not passed validation...");
-            console.log(err);
-        }
-        res.render('index.jade', { title: 'ByteFilms - Index', messages: messages, errors: errors, layout: false});
-    });
+exports.index = function(req, res){
+    if(req.query.model != "" && typeof hashModels[req.query.model] !== "undefined"){
+        var model = null;
+        model = mongoose.model(req.query.model);
+        debugger;
+        res.render('list.jade', { title: 'ByteFilms - List', layout: false, model: model});
+    }else{
+        // Show index
+        res.render('index.jade', { title: 'ByteFilms - List', layout: false, errors: [], messages: []});
+    }
 };
 
-exports.genres = function(req, res){    
-    var entity = mongoose.model('Genre');
-    debugger;
-    res.render('list.jade', { title: 'ByteFilms - List', layout: false, entity: entity});
-};
-
-exports.genre_list = function(req, res){    
-    genreModel.find({},function(err, docs){
-        res.send(docs);
-    });
+exports.list = function(req, res){
+    if(req.body.model != "" && typeof hashModels[req.body.model] !== "undefined"){
+        hashModels[req.body.model].find({},function(err, docs){
+            res.send(docs);
+        });
+    }else{
+        res.send({});
+    }
 };
 
 exports.action = function(req, res){
@@ -88,23 +70,20 @@ exports.action = function(req, res){
     switch(accion){
         case "I": // Insert
             
-            var Entity = mongoose.model(req.body.modelName);
-            var obj = new Entity();
+            var model = mongoose.model(req.body.modelName);
+            var obj = new model();
             var doc = req.body.doc;
-            debugger;
-            for(var prop in Entity.schema.paths){
+            for(var prop in model.schema.paths){
                 if (!(/^_/).test(prop)){
                     obj[prop] = doc[prop];
-                    debugger;
                 }
             }
-            debugger;
             obj.save(function (err) {
                 messages = [];
                 errors = [];
                 if (!err){
                     console.log('Success!');
-                    messages.push("A new " + Entity.modelName + " was created successfully");
+                    messages.push("A new " + model.modelName + " was created successfully");
                 }
                 else {
                     console.log('Error !');
@@ -117,8 +96,8 @@ exports.action = function(req, res){
 
         break;
         case "D": // Delete
-            var Entity = mongoose.model(req.body.modelName);
-            Entity.remove({ _id: req.body.doc._id }, function (err) {
+            var model = mongoose.model(req.body.modelName);
+            model.remove({ _id: req.body.doc._id }, function (err) {
               if (err) return handleError(err);
               // removed!
             });
