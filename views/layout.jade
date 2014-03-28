@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/css/main.css')
+    title #{title}
+    block stylesheet
+  body
+    .container
+      block content
+      include includes/menu
+
+  script(src="/js/main.js")
+  script(src="/js/jquery.js")
+  block script
